@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --color-rentora-green: #1E4D2B;
+  --color-rentora-green-mid: #2D6A3F;
+  --color-rentora-green-soft: #4A8C5C;
+  --color-rentora-green-tint: #EAF2EC;
+  --color-rentora-green-pale: #F2F7F3;
+  --color-rentora-ivory: #F8F5EE;
+  --color-rentora-ivory-dark: #EDE8DE;
+  --color-rentora-gold: #B8962E;
+  --color-rentora-gold-light: #FDF6DC;
+  --color-rentora-ink: #141A14;
+  --color-rentora-ink-mid: #3D4A3D;
+  --color-rentora-ink-muted: #6B7A6B;
+  --color-rentora-border: rgba(30,77,43,0.11);
+  --color-rentora-border-mid: rgba(30,77,43,0.2);
+  --shadow-rentora-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-rentora-md: 0 8px 32px rgba(30,77,43,0.12);
+  --shadow-rentora-lg: 0 20px 60px rgba(30,77,43,0.16);
+  --font-poppins: "Poppins", sans-serif;
+}
+
+* {
+  font-family: "Poppins", sans-serif;
+}

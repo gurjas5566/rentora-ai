@@ -1,0 +1,38 @@
+spring.application.name=rentora-backend
+
+spring.datasource.url=jdbc:postgresql://localhost:5433/rentora_db
+spring.datasource.username=postgres
+spring.datasource.password=your_db_password
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA Configuration
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.properties.hibernate.format_sql=true
+jwt.secret=your_jwt_secret_key
+jwt.expiration=86400000
+
+# App Configuration
+server.port=8087
+
+
+#Groq AI Configuration
+groq.api.key=${GROQ_API_KEY}
+groq.api.url=https://api.groq.com/openai/v1/chat/completions
+groq.model=llama-3.3-70b-versatile
+
+spring.jackson.property-naming-strategy=LOWER_CAMEL_CASE
+spring.jackson.mapper.accept-case-insensitive-properties=true
+
+#Email Configuration
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=your_email@gmail.com
+spring.mail.password=${MAIL_PASSWORD}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.starttls.required=true
+
+
+app.url=http://localhost:5174
