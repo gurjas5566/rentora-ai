@@ -1,5 +1,6 @@
 package com.rentora.rentora_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -11,6 +12,7 @@ public class PropertyImage {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "property_id",nullable = false)
     private Property property;

@@ -244,7 +244,9 @@ const PropertiesPage = () => {
                   {/* Property Image Overlay */}
                   <div className="h-56 relative overflow-hidden bg-rentora-green-mid">
                     <img 
-                      src={property.imageUrl || (property.images && property.images.length > 0 ? property.images[0] : PROPERTY_PLACEHOLDERS[idx % PROPERTY_PLACEHOLDERS.length])} 
+                      src={property.images && property.images.length > 0 
+                        ? `http://localhost:8087${property.images[0].imageUrl}` 
+                        : (property.imageUrl || PROPERTY_PLACEHOLDERS[idx % PROPERTY_PLACEHOLDERS.length])} 
                       alt={property.title} 
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                     />

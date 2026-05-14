@@ -62,17 +62,15 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      const data = await register({
+      await register({
         name: formData.name,
         email: formData.email,
         password: formData.password,
         role: formData.role,
       });
 
-      loginUser(data.token, data.role);
-
-      if (data.role === "TENANT") navigate("/tenant/dashboard");
-      else if (data.role === "OWNER") navigate("/owner/dashboard");
+      // Navigate to verification info page
+      navigate("/verify-email", { state: { email: formData.email } });
     } catch (err) {
       setError(err.response?.data || "Registration failed!");
       gsap.fromTo(".reg-card", { x: -8 }, { x: 8, duration: 0.1, repeat: 5, yoyo: true });
@@ -175,7 +173,7 @@ const RegisterPage = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className="w-full bg-white/50 border border-rentora-border focus:border-rentora-green focus:ring-4 focus:ring-rentora-green/5 rounded-xl px-6 py-4 outline-none transition-all placeholder:text-rentora-ink/20 text-base"
-                  placeholder="John Doe"
+                  placeholder="Username"
                   required
                 />
               </div>
@@ -190,7 +188,7 @@ const RegisterPage = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="w-full bg-white/50 border border-rentora-border focus:border-rentora-green focus:ring-4 focus:ring-rentora-green/5 rounded-xl px-6 py-4 outline-none transition-all placeholder:text-rentora-ink/20 text-base"
-                  placeholder="john@rentora.ai"
+                  placeholder="Email Id"
                   required
                 />
               </div>

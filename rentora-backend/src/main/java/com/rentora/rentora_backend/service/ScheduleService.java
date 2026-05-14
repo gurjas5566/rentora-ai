@@ -18,16 +18,19 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final PropertyRepsitory propertyRepsitory;
+    private final EmailService emailService;
 
     public ScheduleService(
             ScheduleRepository scheduleRepository,
             UserRepository userRepository,
-            PropertyRepsitory propertyRepsitory
+            PropertyRepsitory propertyRepsitory,
+            EmailService emailService
     )
     {
         this.scheduleRepository = scheduleRepository;
         this.propertyRepsitory = propertyRepsitory;
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
     public Schedule bookVisit(
             Map<String,String> request, String tenantEmail
@@ -48,8 +51,12 @@ public class ScheduleService {
         Schedule schedule = new Schedule();
         schedule.setTenant(tenant);
         schedule.setProperty(property);
-        schedule.setVisitDate(LocalDateTime.parse(
-                request.get("visitDate")));
+        LocalDateTime visitDateTime = LocalDateTime.parse(request.get("visitDate"));
+        int hour = visitDateTime.getHour();
+        if (hour < 9 || hour >= 20) {
+            throw new RuntimeException("Property visits can only be scheduled between 9 AM and 8 PM.");
+        }
+        schedule.setVisitDate(visitDateTime);
         schedule.setStatus(Schedule.Status.PENDING);
 
         return scheduleRepository.save(schedule);
@@ -85,7 +92,21 @@ public class ScheduleService {
         }
 
         schedule.setStatus(Schedule.Status.CONFIRMED);
-        return scheduleRepository.save(schedule);
+        schedule = scheduleRepository.save(schedule);
+
+        try{
+            emailService.sendVisitConfirmationEmail(
+                    schedule.getTenant().getEmail(),
+                    schedule.getTenant().getName(),
+                    schedule.getProperty().getTitle(),
+                    schedule.getVisitDate().toString(),
+                    schedule.getProperty().getOwner().getName()
+            );
+        } catch(Exception e)
+        {
+            System.err.println("Visit email failed "+e.getMessage());
+        }
+        return schedule;
     }
 
     public Schedule cancelVisit(String id, String userEmail) {
@@ -149,6 +170,4 @@ public class ScheduleService {
         schedule.setStatus(Schedule.Status.COMPLETED);
         return scheduleRepository.save(schedule);
     }
-    }
-
-
+}

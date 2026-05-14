@@ -9,7 +9,7 @@ import {
   Building2, MapPin, Bed, Bath, Square, User, Star, 
   MessageSquare, Calendar, Sparkles, ChevronRight, ChevronLeft,
   Info, Shield, Clock, Heart, Share2, Map, Check,
-  Bot
+  Bot, Lock, ArrowLeft
 } from "lucide-react";
 
 // ─── Property images map ──────────────────────────────
@@ -41,10 +41,11 @@ const PropertyDetailPage = () => {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [aiLoading, setAiLoading] = useState(false);
 
   // Derived images array for gallery
   const allImages = property?.images?.length > 0 
-    ? property.images 
+    ? property.images.map(img => `http://localhost:8087${img.imageUrl}`)
     : [
         property?.imageUrl || UNSPLASH_IMAGES[id ? id.charCodeAt(0) % UNSPLASH_IMAGES.length : 0],
         ...UNSPLASH_IMAGES.slice(1, 5)
@@ -185,7 +186,14 @@ const PropertyDetailPage = () => {
       <Navbar />
 
       {/* ── HERO SECTION — Image + Details ── */}
-      <div className="max-w-[1100px] mx-auto px-[6%] pt-24">
+      <div className="max-w-[1100px] mx-auto px-[6%] pt-24 mb-6">
+        <button 
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-rentora-ink-muted hover:text-rentora-green transition-colors text-sm font-semibold mb-4 cursor-pointer group"
+        >
+          <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+          Back to Listings
+        </button>
         <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr] gap-10 items-start">
           {/* LEFT — Image */}
           <div>
@@ -710,21 +718,107 @@ const PropertyDetailPage = () => {
                 </div>
               ) : (
                 <>
-                  <label className="text-[12px] font-semibold text-rentora-ink-muted tracking-[1px] uppercase block mb-2">
-                    Select Date & Time
+              <div className="space-y-6">
+                <div>
+                  <label className="text-[12px] font-bold text-rentora-green uppercase tracking-[1.5px] block mb-3 ml-1">
+                    Select a Day
                   </label>
-                  <input
-                    type="datetime-local"
-                    value={visitDate}
-                    onChange={(e) => setVisitDate(e.target.value)}
-                    className="w-full p-3.5 border-[1.5px] border-rentora-border rounded-[10px] outline-none text-[14px] text-rentora-ink bg-white transition-colors duration-200 focus:border-rentora-green-soft mb-3"
-                  />
-                  <button
-                    onClick={handleBookVisit}
-                    className="w-full py-3.5 bg-rentora-green text-rentora-ivory border-none rounded-[12px] text-[15px] font-semibold cursor-pointer transition-all duration-200 hover:bg-rentora-green-mid hover:-translate-y-[1px] hover:shadow-[0_6px_20px_rgba(30,77,43,0.25)]"
-                  >
-                    Confirm Visit
-                  </button>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { id: 'today', label: 'Today', date: new Date().toISOString().split('T')[0] },
+                      { id: 'tomorrow', label: 'Tomorrow', date: new Date(Date.now() + 86400000).toISOString().split('T')[0] }
+                    ].map((day) => (
+                      <button
+                        key={day.id}
+                        onClick={() => {
+                          setVisitDate(prev => {
+                            const time = prev.split('T')[1] || '10:00';
+                            return `${day.date}T${time}`;
+                          });
+                        }}
+                        className={`flex-1 py-3 rounded-xl border-2 font-bold text-sm transition-all cursor-pointer ${
+                          visitDate.startsWith(day.date)
+                            ? "border-rentora-green bg-rentora-green/5 text-rentora-green shadow-sm"
+                            : "border-rentora-border text-rentora-ink-mid hover:border-rentora-border-mid bg-white"
+                        }`}
+                      >
+                        {day.label}
+                      </button>
+                    ))}
+                    <div className="relative flex-1">
+                      <input
+                        type="date"
+                        min={new Date().toISOString().split('T')[0]}
+                        onChange={(e) => {
+                          setVisitDate(prev => {
+                            const time = prev.split('T')[1] || '10:00';
+                            return `${e.target.value}T${time}`;
+                          });
+                        }}
+                        className="w-full py-3 px-4 rounded-xl border-2 border-rentora-border font-bold text-sm text-rentora-ink-mid outline-none bg-white focus:border-rentora-green transition-all appearance-none h-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[12px] font-bold text-rentora-green uppercase tracking-[1.5px] block mb-3 ml-1">
+                    Select Time (9 AM - 8 PM)
+                  </label>
+                  <div className="grid grid-cols-4 gap-2 max-h-[160px] overflow-y-auto pr-1 custom-scrollbar">
+                    {Array.from({ length: 12 }, (_, i) => i + 9).map((hour) => {
+                      const timeString = `${hour.toString().padStart(2, '0')}:00`;
+                      const displayTime = hour <= 12 ? (hour === 12 ? "12 PM" : `${hour} AM`) : `${hour - 12} PM`;
+                      return (
+                        <button
+                          key={hour}
+                          onClick={() => {
+                            setVisitDate(prev => {
+                              const date = prev.split('T')[0] || new Date().toISOString().split('T')[0];
+                              return `${date}T${timeString}`;
+                            });
+                          }}
+                          className={`py-2.5 rounded-lg border-2 font-bold text-[11px] transition-all cursor-pointer ${
+                            visitDate.includes(`T${timeString}`)
+                              ? "border-rentora-green bg-rentora-green/5 text-rentora-green shadow-sm"
+                              : "border-rentora-border text-rentora-ink-mid hover:border-rentora-border-mid bg-white"
+                          }`}
+                        >
+                          {displayTime}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="p-4 bg-rentora-ivory/50 rounded-2xl border border-dashed border-rentora-border">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-white rounded-xl flex items-center justify-center text-rentora-green shadow-sm shrink-0 mt-0.5">
+                      <Calendar size={16} />
+                    </div>
+                    <div>
+                      <p className="text-[13px] text-rentora-ink font-bold">Booking Summary</p>
+                      <p className="text-[12px] text-rentora-ink-muted leading-relaxed">
+                        {visitDate ? (
+                          <span className="flex flex-col">
+                            <span>{new Date(visitDate.split('T')[0]).toLocaleDateString('en-IN', { dateStyle: 'full' })}</span>
+                            <span className="text-rentora-green font-bold">At {visitDate.split('T')[1]}</span>
+                          </span>
+                        ) : "Select a date and time to see summary."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleBookVisit}
+                  disabled={!visitDate || !visitDate.includes('T')}
+                  className="w-full py-4.5 bg-gradient-to-r from-rentora-green to-rentora-green-mid text-white border-none rounded-2xl text-[16px] font-bold cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-rentora-green/20 hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Confirm Visit Request
+                  <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
                 </>
               )}
             </div>
@@ -734,15 +828,7 @@ const PropertyDetailPage = () => {
 
       {/* Login prompt toast */}
       {showLoginPrompt && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-rentora-ink text-white px-6 py-3 rounded-[12px] text-[14px] font-medium z-[999] flex items-center gap-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.2)] animate-[slideUp_0.3s_ease]">
-          <style>
-            {`
-              @keyframes slideUp {
-                from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-                to { opacity: 1; transform: translateX(-50%) translateY(0); }
-              }
-            `}
-          </style>
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-rentora-ink text-white px-6 py-3 rounded-[12px] text-[14px] font-medium z-[999] flex items-center gap-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.2)] animate-slide-up">
           <span><Lock size={14} className="inline mr-1" /></span>
           <span>Please login to continue</span>
           <button

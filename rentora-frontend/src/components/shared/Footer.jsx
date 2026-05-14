@@ -32,12 +32,7 @@ const Footer = () => {
   return (
     <footer className="bg-[#050A05] text-white pt-24 pb-12 px-6 relative overflow-hidden">
       {/* Architectural Grid Pattern */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
-        style={{ 
-          backgroundImage: `linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)`,
-          backgroundSize: '80px 80px' 
-        }}
-      ></div>
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[length:80px_80px]"></div>
 
       {/* Decorative background elements */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-rentora-green/20 rounded-full blur-[140px] pointer-events-none animate-pulse"></div>

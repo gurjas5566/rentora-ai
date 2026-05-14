@@ -1,0 +1,7 @@
+.env
+uploads/
+.idea/
+target/
+node_modules/
+*.log
+.vscode/

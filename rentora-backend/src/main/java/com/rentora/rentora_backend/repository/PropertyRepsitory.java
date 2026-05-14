@@ -22,7 +22,7 @@ public interface PropertyRepsitory extends JpaRepository<Property,String> {
             "(:minRent IS NULL OR p.rent >= :minRent) AND " +
             "(:maxRent IS NULL OR p.rent <= :maxRent) AND " +
             "(:bedrooms IS NULL OR p.bedrooms = :bedrooms) AND " +
-            "(:propertyType IS NULL OR p.propertyType = :propertyType)")
+            "(:propertyType IS NULL OR CAST(p.propertyType as string) = :propertyType)")
     List<Property> searchProperties(
             @Param("city") String city,
             @Param("minRent") Double minRent,

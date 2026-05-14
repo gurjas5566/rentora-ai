@@ -62,198 +62,84 @@ const ResetPasswordPage = () => {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#F8F5EE',
-      fontFamily: "'Poppins', sans-serif",
-      display: 'flex', alignItems: 'center',
-      justifyContent: 'center', padding: '24px'
-    }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .reset-card { animation: fadeUp 0.5s ease forwards; }
-        .input-field {
-          width: 100%; padding: 13px 16px;
-          border: 1.5px solid rgba(30,77,43,0.15);
-          border-radius: 12px; outline: none;
-          font-size: 14px; color: #141A14;
-          background: white; transition: border 0.2s;
-          font-family: 'Poppins', sans-serif;
-          box-sizing: border-box;
-        }
-        .input-field:focus {
-          border-color: #4A8C5C;
-          box-shadow: 0 0 0 3px rgba(74,140,92,0.1);
-        }
-      `}</style>
-
-      <div
-        className="reset-card"
-        style={{
-          background: 'white',
-          borderRadius: '24px',
-          padding: '48px 40px',
-          maxWidth: '420px', width: '100%',
-          textAlign: 'center',
-          boxShadow: '0 8px 40px rgba(30,77,43,0.10)',
-          border: '1px solid rgba(30,77,43,0.08)'
-        }}
-      >
-        <div style={{
-          display: 'flex', justifyContent: 'center',
-          marginBottom: '24px'
-        }}>
+    <div className="min-h-screen bg-rentora-ivory font-poppins flex items-center justify-center p-6">
+      <div className="animate-fade-up bg-white rounded-[24px] p-10 md:p-12 max-w-[420px] w-full text-center shadow-rentora-md border border-rentora-border">
+        <div className="flex justify-center mb-6">
           <RentoraLogo size={44}/>
         </div>
 
         {!token ? (
           <>
-            <div style={{
-              width: '72px', height: '72px',
-              background: '#FEE2E2',
-              borderRadius: '50%',
-              display: 'flex', alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 24px',
-              fontSize: '28px'
-            }}>⚠️</div>
-            <h2 style={{
-              fontSize: '22px', fontWeight: 700,
-              color: '#141A14', marginBottom: '8px'
-            }}>
+            <div className="w-[72px] h-[72px] bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl">
+              ⚠️
+            </div>
+            <h2 className="text-[22px] font-bold text-rentora-ink mb-2">
               Invalid Link
             </h2>
-            <p style={{
-              fontSize: '14px', color: '#6B7A6B',
-              marginBottom: '28px'
-            }}>
-              This reset link is invalid.
-              Please request a new one.
+            <p className="text-sm text-rentora-ink-muted mb-7">
+              This reset link is invalid. Please request a new one.
             </p>
             <button
               onClick={() => navigate('/forgot-password')}
-              style={{
-                width: '100%', padding: '14px',
-                background: '#1E4D2B', color: 'white',
-                border: 'none', borderRadius: '12px',
-                fontSize: '15px', fontWeight: 600,
-                cursor: 'pointer',
-                fontFamily: "'Poppins', sans-serif"
-              }}
+              className="w-full py-3.5 bg-rentora-green text-white rounded-xl text-[15px] font-semibold cursor-pointer hover:bg-rentora-green-mid transition-all"
             >
               Request New Link
             </button>
           </>
         ) : success ? (
           <>
-            <div style={{
-              width: '72px', height: '72px',
-              background: '#EAF2EC',
-              borderRadius: '50%',
-              display: 'flex', alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 24px'
-            }}>
-              <svg width="36" height="36"
-                   viewBox="0 0 36 36" fill="none">
-                <path d="M8 18L15 25L28 11"
-                  stroke="#1E4D2B" strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"/>
+            <div className="w-[72px] h-[72px] bg-rentora-green-tint rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                <path d="M8 18L15 25L28 11" stroke="#1E4D2B" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <h2 style={{
-              fontSize: '22px', fontWeight: 700,
-              color: '#141A14', marginBottom: '8px'
-            }}>
+            <h2 className="text-[22px] font-bold text-rentora-ink mb-2">
               Password Reset! ✅
             </h2>
-            <p style={{
-              fontSize: '14px', color: '#6B7A6B',
-              lineHeight: 1.6
-            }}>
-              Your password has been updated.
-              Redirecting to login...
+            <p className="text-sm text-rentora-ink-muted leading-relaxed">
+              Your password has been updated. Redirecting to login...
             </p>
           </>
         ) : (
           <>
-            <h2 style={{
-              fontSize: '22px', fontWeight: 700,
-              color: '#141A14', marginBottom: '8px'
-            }}>
+            <h2 className="text-[22px] font-bold text-rentora-ink mb-2">
               Reset Password 🔐
             </h2>
-            <p style={{
-              fontSize: '14px', color: '#6B7A6B',
-              lineHeight: 1.6, marginBottom: '32px'
-            }}>
+            <p className="text-sm text-rentora-ink-muted leading-relaxed mb-8">
               Enter your new password below.
             </p>
 
             {error && (
-              <div style={{
-                background: '#FEE2E2',
-                color: '#991B1B',
-                padding: '12px 16px',
-                borderRadius: '10px',
-                fontSize: '13px',
-                marginBottom: '16px',
-                textAlign: 'left'
-              }}>
+              <div className="bg-red-100 text-red-800 p-3 px-4 rounded-xl text-[13px] mb-4 text-left border border-red-200">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleSubmit}>
-              <div style={{
-                marginBottom: '16px', textAlign: 'left'
-              }}>
-                <label style={{
-                  fontSize: '11px', fontWeight: 600,
-                  color: '#6B7A6B', letterSpacing: '1px',
-                  textTransform: 'uppercase',
-                  display: 'block', marginBottom: '8px'
-                }}>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="text-left">
+                <label className="text-[11px] font-bold text-rentora-ink-muted tracking-wider uppercase block mb-2">
                   New Password
                 </label>
                 <input
                   type="password"
-                  className="input-field"
+                  className="w-full p-3.5 border border-rentora-border rounded-xl outline-none text-sm text-rentora-ink bg-white transition-all focus:border-rentora-green-soft focus:ring-4 focus:ring-rentora-green/5"
                   placeholder="Min. 6 characters"
                   value={formData.newPassword}
-                  onChange={e => setFormData({
-                    ...formData,
-                    newPassword: e.target.value
-                  })}
+                  onChange={e => setFormData({ ...formData, newPassword: e.target.value })}
                   required
                 />
               </div>
 
-              <div style={{
-                marginBottom: '24px', textAlign: 'left'
-              }}>
-                <label style={{
-                  fontSize: '11px', fontWeight: 600,
-                  color: '#6B7A6B', letterSpacing: '1px',
-                  textTransform: 'uppercase',
-                  display: 'block', marginBottom: '8px'
-                }}>
+              <div className="text-left mb-6">
+                <label className="text-[11px] font-bold text-rentora-ink-muted tracking-wider uppercase block mb-2">
                   Confirm Password
                 </label>
                 <input
                   type="password"
-                  className="input-field"
+                  className="w-full p-3.5 border border-rentora-border rounded-xl outline-none text-sm text-rentora-ink bg-white transition-all focus:border-rentora-green-soft focus:ring-4 focus:ring-rentora-green/5"
                   placeholder="Repeat your password"
                   value={formData.confirmPassword}
-                  onChange={e => setFormData({
-                    ...formData,
-                    confirmPassword: e.target.value
-                  })}
+                  onChange={e => setFormData({ ...formData, confirmPassword: e.target.value })}
                   required
                 />
               </div>
@@ -261,30 +147,15 @@ const ResetPasswordPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                style={{
-                  width: '100%', padding: '14px',
-                  background: loading
-                    ? '#ccc' : '#1E4D2B',
-                  color: 'white', border: 'none',
-                  borderRadius: '12px', fontSize: '15px',
-                  fontWeight: 600,
-                  cursor: loading
-                    ? 'not-allowed' : 'pointer',
-                  fontFamily: "'Poppins', sans-serif",
-                  transition: 'all 0.22s',
-                  marginBottom: '20px'
-                }}
+                className={`w-full py-3.5 text-white rounded-xl text-[15px] font-semibold transition-all mb-5 ${
+                  loading ? 'bg-gray-300 cursor-not-allowed' : 'bg-rentora-green hover:bg-rentora-green-mid hover:shadow-rentora-sm active:scale-[0.98]'
+                }`}
               >
-                {loading
-                  ? 'Resetting...'
-                  : 'Reset Password'}
+                {loading ? 'Resetting...' : 'Reset Password'}
               </button>
             </form>
 
-            <Link to="/login" style={{
-              fontSize: '13px', color: '#6B7A6B',
-              textDecoration: 'none'
-            }}>
+            <Link to="/login" className="text-[13px] text-rentora-ink-muted hover:text-rentora-green transition-colors no-underline">
               ← Back to Login
             </Link>
           </>

@@ -6,6 +6,7 @@ import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import NeuralBackground from "../components/shared/NeuralBackground";
 import Navbar from "../components/shared/Navbar";
+import OwnerMessaging from "../components/owner/OwnerMessaging";
 import { 
   Plus, Home, MessageSquare, Calendar, BarChart3, 
   MapPin, Trash2, CheckCircle2, AlertCircle, 
@@ -29,12 +30,17 @@ const OwnerDashboard = () => {
     title: "",
     address: "",
     city: "",
+    pincode: "",
     rent: "",
     areaSqft: "",
     propertyType: "APARTMENT",
+    bedrooms: "1",
+    furnishing: "UNFURNISHED",
+    description: "",
     amenities: "",
     images: [],
   });
+  const [previews, setPreviews] = useState([]);
 
   useEffect(() => {
     fetchProfile();
@@ -70,37 +76,81 @@ const OwnerDashboard = () => {
   const fetchListings = async () => {
     try {
       const res = await API.get("/owner/listings");
-      setListings(res.data);
-    } catch (err) { console.error(err); }
+      let data = res.data;
+      if (typeof data === 'string') {
+        try { data = JSON.parse(data); } catch (e) { console.error("Failed to parse listings JSON", e); }
+      }
+      setListings(Array.isArray(data) ? data : []);
+    } catch (err) { 
+      console.error("Fetch listings error:", err); 
+      setListings([]);
+    }
   };
 
   const fetchInquiries = async () => {
     try {
       const res = await API.get("/owner/inquiries");
-      setInquiries(res.data);
-    } catch (err) { console.error(err); }
+      let data = res.data;
+      if (typeof data === 'string') {
+        try { data = JSON.parse(data); } catch (e) { console.error("Failed to parse inquiries JSON", e); }
+      }
+      setInquiries(Array.isArray(data) ? data : []);
+    } catch (err) { 
+      console.error("Fetch inquiries error:", err); 
+      setInquiries([]);
+    }
   };
 
   const fetchVisits = async () => {
     try {
       const res = await API.get("/owner/visits");
-      setVisits(res.data);
-    } catch (err) { console.error(err); }
+      let data = res.data;
+      if (typeof data === 'string') {
+        try { data = JSON.parse(data); } catch (e) { console.error("Failed to parse visits JSON", e); }
+      }
+      setVisits(Array.isArray(data) ? data : []);
+    } catch (err) { 
+      console.error("Fetch visits error:", err); 
+      setVisits([]);
+    }
   };
 
   const handleSubmitListing = async (e) => {
     e.preventDefault();
     try {
+      const { images, ...formDataWithoutImages } = formData;
       const propertyPayload = {
-        ...formData,
-        amenities: formData.amenities.split(",").map((s) => s.trim()),
+        ...formDataWithoutImages,
+        amenities: formData.amenities ? formData.amenities.split(",").map((s) => s.trim()).filter(s => s !== "") : [],
       };
-      await API.post("/properties", propertyPayload);
+      const res = await API.post("/properties", propertyPayload);
+      const propertyId = res.data.id;
+
+      // Upload images if any
+      if (formData.images && formData.images.length > 0) {
+        const imageFormData = new FormData();
+        Array.from(formData.images).forEach(file => {
+          imageFormData.append("files", file);
+        });
+        await API.post(`/properties/${propertyId}/images`, imageFormData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+      }
+
       setIsAddingListing(false);
-      setFormData({ title: "", address: "", city: "", rent: "", areaSqft: "", propertyType: "APARTMENT", amenities: "", images: [] });
+      setFormData({ 
+        title: "", address: "", city: "", pincode: "", rent: "", areaSqft: "", 
+        propertyType: "APARTMENT", bedrooms: "1", furnishing: "UNFURNISHED", 
+        description: "", amenities: "", images: [] 
+      });
+      setPreviews([]);
       fetchListings();
       fetchStats();
-    } catch (err) { alert("Error adding property!"); }
+    } catch (err) { 
+      console.error(err);
+      const errorMsg = err.response?.data || err.message || "Error adding property!";
+      alert(errorMsg); 
+    }
   };
 
   const handleDeleteListing = async (id) => {
@@ -278,6 +328,9 @@ const OwnerDashboard = () => {
                           <option value="APARTMENT">Apartment</option>
                           <option value="HOUSE">House</option>
                           <option value="VILLA">Villa</option>
+                          <option value="OFFICE">Office</option>
+                          <option value="RESIDENTIAL">Residential (Other)</option>
+                          <option value="COMMERCIAL">Commercial (Other)</option>
                         </select>
                       </div>
                     </div>
@@ -294,7 +347,7 @@ const OwnerDashboard = () => {
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                       <div className="space-y-2">
                         <label className="text-[11px] font-bold text-rentora-ink-muted uppercase tracking-wider">City</label>
                         <input 
@@ -303,6 +356,17 @@ const OwnerDashboard = () => {
                           className="w-full bg-rentora-ivory border border-rentora-border rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-rentora-green/20 outline-none transition-all"
                           value={formData.city} 
                           onChange={(e) => setFormData({...formData, city: e.target.value})} 
+                          required 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-bold text-rentora-ink-muted uppercase tracking-wider">Pincode</label>
+                        <input 
+                          type="text" 
+                          placeholder="400001" 
+                          className="w-full bg-rentora-ivory border border-rentora-border rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-rentora-green/20 outline-none transition-all"
+                          value={formData.pincode} 
+                          onChange={(e) => setFormData({...formData, pincode: e.target.value})} 
                           required 
                         />
                       </div>
@@ -330,6 +394,44 @@ const OwnerDashboard = () => {
                       </div>
                     </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-bold text-rentora-ink-muted uppercase tracking-wider">Bedrooms</label>
+                        <select 
+                          className="w-full bg-rentora-ivory border border-rentora-border rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-rentora-green/20 outline-none transition-all"
+                          value={formData.bedrooms} 
+                          onChange={(e) => setFormData({...formData, bedrooms: e.target.value})}
+                        >
+                          <option value="1">1 BHK</option>
+                          <option value="2">2 BHK</option>
+                          <option value="3">3 BHK</option>
+                          <option value="4">4+ BHK</option>
+                        </select>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-bold text-rentora-ink-muted uppercase tracking-wider">Furnishing</label>
+                        <select 
+                          className="w-full bg-rentora-ivory border border-rentora-border rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-rentora-green/20 outline-none transition-all"
+                          value={formData.furnishing} 
+                          onChange={(e) => setFormData({...formData, furnishing: e.target.value})}
+                        >
+                          <option value="UNFURNISHED">Unfurnished</option>
+                          <option value="SEMI_FURNISHED">Semi-furnished</option>
+                          <option value="FULLY_FURNISHED">Fully-furnished</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[11px] font-bold text-rentora-ink-muted uppercase tracking-wider">Description</label>
+                      <textarea 
+                        placeholder="Describe your property (e.g. Near metro station, well ventilated...)" 
+                        className="w-full bg-rentora-ivory border border-rentora-border rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-rentora-green/20 outline-none transition-all min-h-[80px]"
+                        value={formData.description} 
+                        onChange={(e) => setFormData({...formData, description: e.target.value})} 
+                      />
+                    </div>
+
                     <div className="space-y-2">
                       <label className="text-[11px] font-bold text-rentora-ink-muted uppercase tracking-wider">Amenities (Comma separated)</label>
                       <textarea 
@@ -338,6 +440,53 @@ const OwnerDashboard = () => {
                         value={formData.amenities} 
                         onChange={(e) => setFormData({...formData, amenities: e.target.value})} 
                       />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[11px] font-bold text-rentora-ink-muted uppercase tracking-wider">Property Images</label>
+                      <div className="flex items-center justify-center w-full">
+                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-rentora-border rounded-2xl cursor-pointer bg-rentora-ivory hover:bg-rentora-green-pale/50 transition-all">
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <Upload className="w-8 h-8 mb-2 text-rentora-ink-muted" />
+                            <p className="text-xs text-rentora-ink-muted">
+                              <span className="font-bold">Click to upload</span> or drag and drop
+                            </p>
+                            <p className="text-[10px] text-rentora-ink-muted">Selected: {formData.images?.length || 0} files</p>
+                          </div>
+                          <input 
+                            type="file" 
+                            className="hidden" 
+                            multiple 
+                            accept="image/*"
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files);
+                              setFormData({...formData, images: e.target.files});
+                              const newPreviews = files.map(file => URL.createObjectURL(file));
+                              setPreviews(newPreviews);
+                            }}
+                          />
+                        </label>
+                      </div>
+                      {previews.length > 0 && (
+                        <div className="grid grid-cols-4 md:grid-cols-6 gap-2 mt-4">
+                          {previews.map((url, i) => (
+                            <div key={i} className="aspect-square rounded-lg overflow-hidden border border-rentora-border bg-white relative group">
+                              <img src={url} className="w-full h-full object-cover" alt="preview" />
+                              <button 
+                                type="button"
+                                onClick={() => {
+                                  const updatedPreviews = previews.filter((_, index) => index !== i);
+                                  setPreviews(updatedPreviews);
+                                  // Note: removing from FileList is tricky, usually we just filter during upload
+                                }}
+                                className="absolute top-1 right-1 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <Plus size={12} className="rotate-45" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex gap-4 pt-6">
@@ -353,12 +502,20 @@ const OwnerDashboard = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {listings.map((item) => (
+                {listings?.map((item) => (
                   <div key={item.id} className="bg-white border border-rentora-border rounded-3xl overflow-hidden shadow-sm hover:shadow-rentora-md transition-all group relative">
                     <div className="h-48 bg-rentora-green-pale relative overflow-hidden">
-                      <div className="absolute inset-0 flex items-center justify-center text-rentora-ink-muted opacity-20 group-hover:scale-110 transition-transform duration-500">
-                        <Home size={64} />
-                      </div>
+                      {item.images && item.images.length > 0 ? (
+                        <img 
+                          src={`http://localhost:8087${item.images[0].imageUrl}`} 
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          alt={item.title}
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center text-rentora-ink-muted opacity-20 group-hover:scale-110 transition-transform duration-500">
+                          <Home size={64} />
+                        </div>
+                      )}
                       <div className="absolute top-4 left-4">
                         <span className={`px-3 py-1 rounded-full text-[10px] font-bold border backdrop-blur-md ${item.status === 'ACTIVE' ? 'bg-rentora-green/10 text-rentora-green border-rentora-green/20' : 'bg-rentora-gold/10 text-rentora-gold-dark border-rentora-gold/20'}`}>
                           {item.status}
@@ -398,54 +555,28 @@ const OwnerDashboard = () => {
         )}
 
         {/* ── INQUIRIES TAB ── */}
-        {activeTab === "inquiries" && (
-          <div ref={contentRef} className="space-y-8">
-            <h2 className="text-2xl font-bold text-rentora-ink">Market Interest</h2>
-            <div className="bg-white border border-rentora-border rounded-3xl shadow-sm overflow-hidden">
-              {inquiries.length > 0 ? (
-                <div className="divide-y divide-rentora-border">
-                  {inquiries.map((inquiry) => (
-                    <div key={inquiry.id} className="p-8 flex items-center justify-between hover:bg-rentora-green-pale/20 transition-all group">
-                      <div className="flex items-center gap-6">
-                        <div className="w-12 h-12 bg-rentora-ivory border border-rentora-border rounded-2xl flex items-center justify-center text-rentora-ink">
-                          <MessageSquare size={20} />
-                        </div>
-                        <div>
-                          <p className="font-bold text-rentora-ink">{inquiry.senderName}</p>
-                          <p className="text-xs text-rentora-ink-muted mb-1">{inquiry.senderEmail}</p>
-                          <p className="text-[10px] text-rentora-gold font-bold uppercase tracking-widest bg-rentora-gold-light px-2 py-0.5 rounded-md inline-block">
-                            Property: {inquiry.propertyTitle}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-8">
-                        <div className="hidden md:block text-right">
-                          <p className="text-xs font-medium text-rentora-ink-mid line-clamp-1 max-w-[300px]">"{inquiry.message}"</p>
-                        </div>
-                        <button className="p-3 bg-rentora-ink text-white rounded-xl hover:bg-black transition-all">
-                          <ChevronRight size={16} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="p-20 text-center">
-                  <MessageSquare size={48} className="mx-auto mb-4 text-rentora-green-pale" />
-                  <h3 className="text-lg font-bold text-rentora-ink">No inquiries yet</h3>
-                  <p className="text-sm text-rentora-ink-muted mt-2">Interest in your properties will appear here.</p>
-                </div>
-              )}
+        {activeTab === 'inquiries' && (
+          <div className="space-y-8" ref={contentRef}>
+            <div className="mb-5">
+              <h2 className="text-[22px] font-bold text-rentora-ink mb-1">
+                Messages
+              </h2>
+              <p className="text-sm text-rentora-ink-muted">
+                Chat with tenants directly 
+              </p>
             </div>
+            <OwnerMessaging profile={profile}/>
           </div>
-        )}
+)}
+
+
 
         {/* ── VISITS TAB ── */}
         {activeTab === "visits" && (
           <div ref={contentRef} className="space-y-8">
             <h2 className="text-2xl font-bold text-rentora-ink">Visit Schedule</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {visits.length > 0 ? (
+              {visits?.length > 0 ? (
                 visits.map((visit) => (
                   <div key={visit.id} className="bg-white border border-rentora-border rounded-3xl p-8 shadow-sm hover:border-rentora-border-mid transition-all">
                     <div className="flex justify-between items-start mb-6">
@@ -454,7 +585,7 @@ const OwnerDashboard = () => {
                           <Calendar size={20} />
                         </div>
                         <div>
-                          <p className="font-bold text-rentora-ink">{visit.tenantName}</p>
+                          <p className="font-bold text-rentora-ink">{visit.tenant?.name}</p>
                           <p className="text-[10px] text-rentora-ink-muted uppercase tracking-wider">Scheduled Visit</p>
                         </div>
                       </div>
@@ -462,14 +593,21 @@ const OwnerDashboard = () => {
                         CONFIRMED
                       </span>
                     </div>
-                    <div className="space-y-4 mb-8">
-                      <div className="flex items-center gap-3 text-sm font-medium text-rentora-ink-mid">
-                        <Clock size={16} className="text-rentora-gold" /> {new Date(visit.visitDate).toLocaleDateString()} at {visit.visitTime}
+                      <div className="space-y-4 mb-8">
+                        <div className="flex items-center gap-3 text-sm font-medium text-rentora-ink-mid">
+                          <Clock size={16} className="text-rentora-gold" /> 
+                          {new Date(visit.visitDate).toLocaleString('en-IN', { 
+                            day: 'numeric', month: 'short', year: 'numeric',
+                            hour: '2-digit', minute: '2-digit' 
+                          })}
+                        </div>
+                        <div className="flex items-center gap-3 text-sm font-medium text-rentora-ink-mid">
+                          <Home size={16} className="text-rentora-ink" /> {visit.property?.title}
+                        </div>
+                        <div className="flex items-center gap-3 text-[12px] text-rentora-ink-muted">
+                          <MapPin size={14} /> {visit.property?.address}, {visit.property?.city}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-3 text-sm font-medium text-rentora-ink-mid">
-                        <Home size={16} className="text-rentora-ink" /> {visit.propertyTitle}
-                      </div>
-                    </div>
                     <div className="flex gap-3">
                       <button className="flex-1 py-3 bg-rentora-ivory border border-rentora-border rounded-xl text-[11px] font-bold text-rentora-ink hover:bg-rentora-border transition-all uppercase tracking-tight">Reschedule</button>
                       <button className="flex-1 py-3 bg-red-50 text-red-500 rounded-xl text-[11px] font-bold hover:bg-red-500 hover:text-white transition-all uppercase tracking-tight">Cancel</button>

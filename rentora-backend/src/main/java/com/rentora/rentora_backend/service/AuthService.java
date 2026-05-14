@@ -53,6 +53,7 @@ public class AuthService {
                 role.toUpperCase()));
         user.setVerificationToken(verificationToken);
         user.setEmailVerified(false);
+        user.setIsVerified(false);
 
         userRepository.save(user);
 
@@ -67,11 +68,7 @@ public class AuthService {
         }
 
         Map<String, String> response = new HashMap<>();
-        response.put("message",
-                "Registration successful! " +
-                        "Please check your email to verify " +
-                        "your account.");
-        response.put("email", email);
+        response.put("message", "Registration successful! Please check your email to verify your account.");
         return response;
     }
 

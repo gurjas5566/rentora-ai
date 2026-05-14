@@ -67,11 +67,14 @@ public class Property {
     @Column(name = "property_type")
     private PropertyType propertyType;
 
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PropertyImage> images;
+
     public enum Status {
         PENDING, ACTIVE, REJECTED, RENTED
     }
 
     public enum PropertyType{
-        RESIDENTIAL,COMMERCIAL
+        RESIDENTIAL,COMMERCIAL, APARTMENT, HOUSE, VILLA, OFFICE
     }
 }

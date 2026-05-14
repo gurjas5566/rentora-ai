@@ -1,10 +1,12 @@
 package com.rentora.rentora_backend.controller;
 
 import com.rentora.rentora_backend.model.Property;
+import com.rentora.rentora_backend.model.PropertyImage;
 import com.rentora.rentora_backend.service.PropertyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -55,12 +57,10 @@ public class PropertyController {
             @RequestBody Map<String, Object> request,
             Authentication authentication) {
         try {
-            Property property = propertyService.createProperty(
-                    request, authentication.getName());
-            return ResponseEntity.ok(property);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
+            return ResponseEntity.ok(
+                    propertyService.createProperty(request, authentication.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -127,5 +127,18 @@ public class PropertyController {
         return ResponseEntity.ok(
                 propertyService.getOwnerProperties(
                         authentication.getName()));
+    }
+    @PostMapping("/{id}/images")
+    public ResponseEntity<?> uploadImages(
+            @PathVariable String id,
+            @RequestParam("files") MultipartFile[] files,
+            Authentication authentication) {
+        try {
+            List<PropertyImage> images = propertyService.uploadImages(id, files, authentication.getName());
+            return ResponseEntity.ok(images);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest()
+                    .body(e.getMessage());
+        }
     }
 }

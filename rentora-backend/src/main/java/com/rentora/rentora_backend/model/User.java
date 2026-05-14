@@ -33,6 +33,9 @@ public class User {
     @Column(name = "is_verified")
     private Boolean isVerified = false;
 
+    @Column(name = "is_gold")
+    private Boolean isGold = false;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

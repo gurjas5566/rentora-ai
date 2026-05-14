@@ -10,7 +10,7 @@ const VerifyEmailPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { loginUser } = useAuth();
-  const [status, setStatus] = useState('verifying'); // verifying | success | error
+  const [status, setStatus] = useState('verifying'); // verifying | success | error | sent
   const hasRun = useRef(false);
 
   useEffect(() => {
@@ -19,7 +19,8 @@ const VerifyEmailPage = () => {
 
     const token = searchParams.get('token');
     if (!token) {
-      setStatus('error');
+      // If we don't have a token, we might have just registered
+      setStatus('sent');
       return;
     }
     verifyEmail(token);
@@ -65,6 +66,30 @@ const VerifyEmailPage = () => {
         </div>
 
         <AnimatePresence mode="wait">
+          {status === 'sent' && (
+            <motion.div
+              key="sent"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex flex-col items-center relative z-10"
+            >
+              <div className="w-16 h-16 bg-rentora-green-tint rounded-full flex items-center justify-center mb-6">
+                <CheckCircle2 className="w-8 h-8 text-rentora-green" />
+              </div>
+              <h2 className="text-2xl font-bold text-rentora-ink mb-3">Check your inbox</h2>
+              <p className="text-rentora-ink-muted text-sm leading-relaxed mb-8">
+                We've sent a verification link to your email address. Please click it to activate your account.
+              </p>
+              
+              <button
+                onClick={() => navigate('/login')}
+                className="w-full py-4 bg-rentora-green text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-rentora-green-mid shadow-lg hover:shadow-rentora-green/20 transition-all"
+              >
+                Go to Login
+              </button>
+            </motion.div>
+          )}
+
           {status === 'verifying' && (
             <motion.div
               key="verifying"

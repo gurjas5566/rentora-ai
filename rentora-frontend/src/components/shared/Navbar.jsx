@@ -108,16 +108,16 @@ const Navbar = ({ onScrollToSection }) => {
           ) : (
             <>
               <button 
-                className="text-rentora-green border-[1.5px] border-rentora-border-mid px-5 py-2 rounded-lg text-sm font-medium hover:bg-rentora-green-tint transition-all flex items-center gap-2 cursor-pointer"
+                className="text-rentora-green border-[1.5px] border-rentora-border-mid px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-rentora-green-tint transition-all flex items-center gap-2 cursor-pointer"
                 onClick={() => navigate("/login")}
               >
                 <LogIn size={16} /> Login
               </button>
               <button 
-                className="bg-rentora-green text-rentora-ivory px-5 py-2 rounded-lg text-sm font-medium hover:bg-rentora-green-mid hover:-translate-y-px hover:shadow-rentora-md transition-all flex items-center gap-2 cursor-pointer"
+                className="bg-rentora-green text-rentora-ivory px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-rentora-green-mid hover:-translate-y-px hover:shadow-rentora-md transition-all flex items-center gap-2 cursor-pointer"
                 onClick={() => navigate("/register")}
               >
-                <Rocket size={16} /> Join
+                <Rocket size={16} /> Sign Up
               </button>
             </>
           )}
@@ -182,15 +182,15 @@ const Navbar = ({ onScrollToSection }) => {
             <div className="flex flex-col gap-3">
               <button 
                 onClick={() => { setIsMobileMenuOpen(false); navigate("/login"); }}
-                className="w-full py-3 border border-rentora-border-mid rounded-xl font-semibold text-rentora-green cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3.5 border border-rentora-border-mid rounded-xl font-semibold text-rentora-green cursor-pointer flex items-center justify-center gap-2"
               >
                 <LogIn size={18} /> Login
               </button>
               <button 
                 onClick={() => { setIsMobileMenuOpen(false); navigate("/register"); }}
-                className="w-full py-3 bg-rentora-green text-white rounded-xl font-bold cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3.5 bg-rentora-green text-white rounded-xl font-bold cursor-pointer flex items-center justify-center gap-2"
               >
-                <Rocket size={18} /> Get Started
+                <Rocket size={18} /> Sign Up
               </button>
             </div>
           )}

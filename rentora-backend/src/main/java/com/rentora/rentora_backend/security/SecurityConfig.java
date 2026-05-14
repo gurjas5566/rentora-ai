@@ -54,8 +54,12 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/api/ai/**")
                         .permitAll()
+                        .requestMatchers("/api/uploads/**")
+                        .permitAll()
                         .requestMatchers(HttpMethod.POST,
                                 "/api/properties")
+                        .hasRole("OWNER")
+                        .requestMatchers("/api/owner/**")
                         .hasRole("OWNER")
                         .requestMatchers(HttpMethod.PUT,
                                 "/api/properties/*/approve")

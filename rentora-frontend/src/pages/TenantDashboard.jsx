@@ -6,6 +6,7 @@ import API from '../services/axiosConfig';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import NeuralBackground from "../components/shared/NeuralBackground";
+import TenantMessaging from '../components/tenant/TenantMessaging';
 import Navbar from "../components/shared/Navbar";
 import {
   Home, Calendar, MessageSquare, Bot,
@@ -323,44 +324,11 @@ const TenantDashboard = () => {
         )}
 
         {/* ── MESSAGES TAB ── */}
-        {activeTab === 'messages' && (
-          <div ref={contentRef} className="space-y-8">
-            <h2 className="text-2xl font-bold text-rentora-ink">Conversation History</h2>
-            {messages.length === 0 ? (
-              <div className="bg-white border border-rentora-border rounded-3xl p-20 text-center shadow-sm">
-                <MessageSquare size={48} className="mx-auto mb-6 text-rentora-border-mid" />
-                <h3 className="text-xl font-bold mb-2">No messages yet</h3>
-                <p className="text-rentora-ink-muted">Connect with owners to start your conversation.</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {messages.map(msg => (
-                  <div key={msg.id} className="bg-white border border-rentora-border rounded-2xl p-6 shadow-sm hover:border-rentora-border-mid transition-all">
-                    <div className="flex justify-between items-start mb-6">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-rentora-green-tint rounded-xl flex items-center justify-center text-rentora-green font-bold text-lg ring-1 ring-rentora-green/10">
-                          {msg.owner?.name?.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <p className="font-bold text-rentora-ink">{msg.owner?.name}</p>
-                          <p className="text-xs text-rentora-ink-muted flex items-center gap-1.5 mt-0.5">
-                            <Home size={12} /> Re: {msg.property?.title}
-                          </p>
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-bold text-rentora-ink-muted uppercase tracking-widest bg-rentora-ivory px-3 py-1 rounded-full border border-rentora-border">
-                        {new Date(msg.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="bg-rentora-green-pale/40 p-5 rounded-2xl border-l-4 border-rentora-green-soft">
-                      <p className="text-sm text-rentora-ink-mid leading-relaxed font-light italic">"{msg.content}"</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+       {activeTab === 'messages' && (
+        <div ref= {contentRef}> 
+        <TenantMessaging profile={profile} />
+        </div>
+       )}
 
         {/* ── AI CHAT TAB ── */}
         {activeTab === 'chat' && (
@@ -449,15 +417,6 @@ const TenantDashboard = () => {
         )}
       </div>
 
-      <style>{`
-        .animate-bounce-slow {
-          animation: bounce-slow 3s infinite ease-in-out;
-        }
-        @keyframes bounce-slow {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
-      `}</style>
     </div>
   );
 };

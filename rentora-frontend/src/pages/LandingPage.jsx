@@ -14,6 +14,8 @@ import Navbar from "../components/shared/Navbar";
 import Footer from "../components/shared/Footer";
 import { getAllProperties } from "../services/propertyService";
 import { useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import API from "../services/axiosConfig";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -29,6 +31,7 @@ const LandingPage = () => {
   const [previewSearch, setPreviewSearch] = useState("2BHK under ₹40k in Mumbai");
   const [dynamicProperties, setDynamicProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
   const containerRef = useRef();
 
   useEffect(() => {
@@ -118,6 +121,51 @@ const LandingPage = () => {
         top: offsetPosition,
         behavior: "smooth"
       });
+    }
+  };
+
+  const handleUpgradeToGold = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      // 1. Create order on backend
+      const res = await API.post("/payments/create-order", { amount: 499 });
+      const order = JSON.parse(res.data);
+
+      const options = {
+        key: "your_razorpay_key_here", // Should match RAZORPAY_KEY_ID in .env
+        amount: order.amount,
+        currency: order.currency,
+        name: "Rentora Gold",
+        description: "Monthly Membership Plan",
+        order_id: order.id,
+        handler: async (response) => {
+          try {
+            // 2. Verify payment on backend
+            const verifyRes = await API.post("/payments/verify", response);
+            alert(verifyRes.data.message);
+            window.location.reload();
+          } catch (err) {
+            alert("Payment verification failed!");
+          }
+        },
+        prefill: {
+          name: user.name,
+          email: user.email,
+        },
+        theme: {
+          color: "#1E4D2B",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error(err);
+      alert("Error initiating payment. Please try again.");
     }
   };
 
@@ -409,7 +457,7 @@ const LandingPage = () => {
                 ))}
               </div>
               <button 
-                onClick={() => navigate("/register")}
+                onClick={handleUpgradeToGold}
                 className="w-full py-4 bg-rentora-gold text-rentora-ink rounded-2xl font-bold hover:bg-white hover:text-rentora-ink transition-all shadow-rentora-md cursor-pointer"
               >
                 Upgrade to Gold

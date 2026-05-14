@@ -19,6 +19,23 @@
   --shadow-rentora-md: 0 8px 32px rgba(30,77,43,0.12);
   --shadow-rentora-lg: 0 20px 60px rgba(30,77,43,0.16);
   --font-poppins: "Poppins", sans-serif;
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes bounce-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  --animate-fade-up: fadeUp 0.5s ease forwards;
+  --animate-bounce-slow: bounce-slow 3s infinite ease-in-out;
+  --animate-slide-up: slideUp 0.3s ease;
 }
 
 * {
