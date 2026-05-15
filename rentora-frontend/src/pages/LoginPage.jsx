@@ -67,7 +67,8 @@ const LoginPage = () => {
       else if (data.role === "OWNER") navigate("/owner/dashboard");
       else if (data.role === "ADMIN") navigate("/admin/dashboard");
     } catch (err) {
-      setError("Invalid email or password!");
+      const errorMessage = err.response?.data?.message || err.response?.data || "Invalid email or password!";
+      setError(typeof errorMessage === 'string' ? errorMessage : "An error occurred during login.");
       gsap.fromTo(".login-card", { x: -8 }, { x: 8, duration: 0.1, repeat: 5, yoyo: true });
     } finally {
       setLoading(false);
