@@ -18,7 +18,9 @@ public class CorsConfig {
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                "http://localhost:5174"
+                "http://localhost:5174",
+                "http://localhost:80",
+                "https://rentora-frontend.onrender.com"
         ));
         config.setAllowedHeaders(List.of(
                 "Authorization",
