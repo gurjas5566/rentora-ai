@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET,
@@ -84,7 +85,9 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                "http://localhost:5174"
+                "http://localhost:5174",
+                "http://localhost:80",
+                "https://rentora-frontend.onrender.com"
         ));
         config.setAllowedMethods(List.of(
                 "GET", "POST", "PUT",
