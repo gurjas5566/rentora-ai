@@ -39,7 +39,7 @@ public class SecurityConfig {
                                 SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/auth/**")
+                        .requestMatchers("/api/auth/**", "/auth/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/api/properties/search")
@@ -87,7 +87,8 @@ public class SecurityConfig {
                 "http://localhost:5173",
                 "http://localhost:5174",
                 "http://localhost:80",
-                "https://rentora-frontend.onrender.com"
+                "https://rentora-frontend.onrender.com",
+                "https://rentora-frontend-tlce.onrender.com"
         ));
         config.setAllowedMethods(List.of(
                 "GET", "POST", "PUT",
