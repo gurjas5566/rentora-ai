@@ -83,10 +83,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "http://localhost:5174",
-                "http://localhost:80",
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
                 "https://rentora-frontend.onrender.com",
                 "https://rentora-frontend-tlce.onrender.com"
         ));
