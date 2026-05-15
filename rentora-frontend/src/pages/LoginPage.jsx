@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { AlertTriangle, CheckCircle2, ShieldCheck, Sparkles, Target, Zap } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { login } from "../services/authService";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext.jsx";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import Logo from "../components/shared/Logo";

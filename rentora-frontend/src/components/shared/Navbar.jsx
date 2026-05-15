@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext.jsx";
 import Logo from "./Logo";
 import { 
   Menu, X, LogIn, Rocket, LayoutGrid, Sparkles, Tag, 
