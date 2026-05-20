@@ -169,8 +169,9 @@ public class AuthService {
             emailService.sendPasswordResetEmail(
                     email, user.getName(), resetToken);
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "Failed to send reset email!");
+            System.err.println("Forgot password email failed: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to send reset email! Error: " + e.getMessage());
         }
 
         Map<String, String> response = new HashMap<>();
