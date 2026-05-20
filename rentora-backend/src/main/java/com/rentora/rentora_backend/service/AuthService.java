@@ -62,9 +62,9 @@ public class AuthService {
             emailService.sendVerificationEmail(
                     email, name, verificationToken);
         } catch (Exception e) {
-            System.err.println(
-                    "Email sending failed: " +
-                            e.getMessage());
+            System.err.println("Email sending failed during registration: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Email failed to send! Error: " + e.getMessage());
         }
 
         Map<String, String> response = new HashMap<>();
