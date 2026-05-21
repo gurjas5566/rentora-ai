@@ -15,10 +15,10 @@ import java.util.Map;
 @Service
 public class EmailService {
 
-    @Value("${resend.api.key:}")
-    private String resendApiKey;
+    @Value("${sendgrid.api.key:}")
+    private String sendgridApiKey;
 
-    @Value("${resend.from.email:onboarding@resend.dev}")
+    @Value("${sendgrid.from.email:}")
     private String fromEmail;
 
     @Value("${app.url}")
@@ -33,24 +33,35 @@ public class EmailService {
     private void sendEmail(String to, String subject,
                            String htmlContent) {
         try {
-            String url = "https://api.resend.com/emails";
+            String url = "https://api.sendgrid.com/v3/mail/send";
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(resendApiKey);
+            headers.setBearerAuth(sendgridApiKey);
 
             Map<String, Object> body = new HashMap<>();
-            body.put("from", "Rentora AI <" + fromEmail + ">");
-            body.put("to", List.of(to));
-            body.put("subject", subject);
-            body.put("html", htmlContent);
+            
+            // "personalizations" array
+            Map<String, Object> personalization = new HashMap<>();
+            personalization.put("to", List.of(Map.of("email", to)));
+            personalization.put("subject", subject);
+            body.put("personalizations", List.of(personalization));
+
+            // "from" object
+            body.put("from", Map.of("email", fromEmail, "name", "Rentora AI"));
+
+            // "content" array
+            Map<String, String> content = new HashMap<>();
+            content.put("type", "text/html");
+            content.put("value", htmlContent);
+            body.put("content", List.of(content));
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
             
             ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
             
             if (!response.getStatusCode().is2xxSuccessful()) {
-                throw new RuntimeException("Resend API failed: " + response.getBody());
+                throw new RuntimeException("SendGrid API failed: " + response.getBody());
             }
         } catch (Exception e) {
             throw new RuntimeException(
