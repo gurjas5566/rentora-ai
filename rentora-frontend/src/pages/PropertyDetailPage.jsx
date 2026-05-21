@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getPropertyById } from "../services/propertyService";
-import API from "../services/axiosConfig";
+import API, { BASE_HOST } from "../services/axiosConfig";
 import Navbar from "../components/shared/Navbar";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -45,7 +45,7 @@ const PropertyDetailPage = () => {
 
   // Derived images array for gallery
   const allImages = property?.images?.length > 0 
-    ? property.images.map(img => `http://localhost:8087${img.imageUrl}`)
+    ? property.images.map(img => `${BASE_HOST}${img.imageUrl}`)
     : [
         property?.imageUrl || UNSPLASH_IMAGES[id ? id.charCodeAt(0) % UNSPLASH_IMAGES.length : 0],
         ...UNSPLASH_IMAGES.slice(1, 5)

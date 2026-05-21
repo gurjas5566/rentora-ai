@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getProfile } from "../services/authService";
-import API from "../services/axiosConfig";
+import API, { BASE_HOST } from "../services/axiosConfig";
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import NeuralBackground from "../components/shared/NeuralBackground";
@@ -507,7 +507,7 @@ const OwnerDashboard = () => {
                     <div className="h-48 bg-rentora-green-pale relative overflow-hidden">
                       {item.images && item.images.length > 0 ? (
                         <img 
-                          src={`http://localhost:8087${item.images[0].imageUrl}`} 
+                          src={`${BASE_HOST}${item.images[0].imageUrl}`} 
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           alt={item.title}
                         />

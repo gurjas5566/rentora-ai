@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { searchProperties } from "../services/propertyService";
+import { BASE_HOST } from "../services/axiosConfig";
 import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -245,7 +246,7 @@ const PropertiesPage = () => {
                   <div className="h-56 relative overflow-hidden bg-rentora-green-mid">
                     <img 
                       src={property.images && property.images.length > 0 
-                        ? `http://localhost:8087${property.images[0].imageUrl}` 
+                        ? `${BASE_HOST}${property.images[0].imageUrl}` 
                         : (property.imageUrl || PROPERTY_PLACEHOLDERS[idx % PROPERTY_PLACEHOLDERS.length])} 
                       alt={property.title} 
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
