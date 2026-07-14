@@ -87,7 +87,8 @@ public class SecurityConfig {
                 "http://localhost:*",
                 "https://rentora-frontend.onrender.com",
                 "https://rentora-frontend-tlce.onrender.com",
-                "https://*.vercel.app"
+                "https://*.vercel.app",
+                "https://rentora-ai.vercel.app"
         ));
         config.setAllowedMethods(List.of(
                 "GET", "POST", "PUT",
