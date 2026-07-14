@@ -86,7 +86,8 @@ public class SecurityConfig {
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:*",
                 "https://rentora-frontend.onrender.com",
-                "https://rentora-frontend-tlce.onrender.com"
+                "https://rentora-frontend-tlce.onrender.com",
+                "https://*.vercel.app"
         ));
         config.setAllowedMethods(List.of(
                 "GET", "POST", "PUT",
